@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <title>Aplikasi SITB Twitter</title>
+
+    <!-- Bootstrap core CSS -->
+    <link href="assets/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="assets/datepicker/css/datepicker3.css" rel="stylesheet" >
+    <!-- Custom styles for this template -->
+    <link href="dashboard.css" rel="stylesheet">
+  </head>
+  <body>
+  <nav class="navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0 shadow">
+    <a class="navbar-brand col-md-3 col-lg-2 mr-0 px-3" href="#">Aplikasi Twitter SITB</a>
+    <button class="navbar-toggler position-absolute d-md-none collapsed" type="button" data-toggle="collapse" data-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </nav>
+
+  <div class="container-fluid">
+    <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="sidebar-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link active" href="#">
+                <span data-feather="home"></span>
+                Dashboard <span class="sr-only">(current)</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      <main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <h1 class="h2">Dashboard</h1>
+        </div>
+
+        <div class="row mb-5">
+          <div class="col-md-2">
+            <h6>Start Date</h6>
+            <input class="form-control" type="text" value="2021-05-26" id="start">
+          </div>
+          <div class="col-md-2">
+            <h6>End Date</h6>
+            <input class="form-control" type="text" value="2021-06-07" id="end">
+          </div>
+          <div class="col-md-2">
+            <h6>Location</h6>
+            <select class="form-select form-control" id="location">
+              <option selected value="Indonesia">Indonesia</option>
+              <!-- <option value="all">All</option> -->
+            </select>
+          </div>
+          <div class="col-md-2">
+            <h6>Language</h6>
+            <select class="form-select form-control" id="lang">
+              <option selected value="all">All</option>
+              <option value="in">Indonesia</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <h6>Limit Data</h6>
+            <select class="form-select form-control" id="limit">
+              <option selected value="all">All</option>
+              <option value="5000">5.000</option>
+              <option value="1000">1.000</option>
+            </select>
+          </div>
+          <div class="col-md-2">
+            <h6>&nbsp;</h6>
+            <button class="btn btn-primary" onclick="load_data()">Filter</button>
+          </div>
+        </div>
+
+        <div id="loader">
+          <h3 class="text-center">Please Wait...</h3>
+        </div>
+
+        <div id="content" style="display: none;">
+          <canvas class="my-4 w-100" id="myChart" width="900" height="380"></canvas>
+
+          <div class="row mb-5">
+            <div class="col-md-4">
+              <h5>Number Of Tweets</h5>
+              <h3 id="number_of_tweets">#</h3>
+            </div>
+            <div class="col-md-4">
+              <h5>Number of Users</h5>
+              <h3 id="number_of_users">#</h3>
+            </div>
+            <div class="col-md-4">
+              <h5>Total Reach</h5>
+              <h3 id="total_reach">#</h3>
+            </div>
+          </div>
+  
+          <div class="row mb-5">
+            <div class="col-md-4">
+              <h5>Top Locations</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>Location</th>
+                      <th>Number of Tweets</th>
+                      <th>Total Reach</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top_location"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h5>Top Users</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>User</th>
+                      <th>Followers Count</th>
+                    </tr>
+                  </thead>
+                  <tbody id="top_user"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <h5>Active Users</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>User</th>
+                      <th>Number of Tweets</th>
+                    </tr>
+                  </thead>
+                  <tbody id="active_user"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+          <div class="row mb-5">
+            <div class="col-md-6">
+              <h5>Popular Tweets</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>Tweet</th>
+                      <th>Reach</th>
+                    </tr>
+                  </thead>
+                  <tbody id="popular_tweet"></tbody>
+                </table>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <h5>Latest Tweets</h5>
+              <div class="table-responsive">
+                <table class="table table-striped table-sm">
+                  <thead>
+                    <tr>
+                      <th>Tweet</th>
+                      <th>Reach</th>
+                    </tr>
+                  </thead>
+                  <tbody id="latest_tweet"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+  
+          <div class="row mb-5">
+            <div class="col-md-12">
+              <h5>Context of Discussion</h5>
+              <div id="top_word" class="text-center"></div>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+    <script type="text/javascript" src="assets/jquery/js/jquery-3.2.1.slim.min.js"></script> 
+    <script type="text/javascript" src="assets/jquery/js/jquery.min.js"></script> 
+    <script type="text/javascript" src="assets/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.9.0/feather.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.min.js"></script>
+    <script type="text/javascript" src="assets/datepicker/js/bootstrap-datepicker.js"></script> 
+    <script>
+      $(document).ready(function() { 
+        feather.replace();
+
+        $('#start').datepicker({
+          format: "yyyy-mm-dd",
+          todayBtn: "linked",
+          language: "id",
+          orientation: "top left",
+          keyboardNavigation: false,
+          autoclose: true
+        });
+
+        $('#end').datepicker({
+          format: "yyyy-mm-dd",
+          todayBtn: "linked",
+          language: "id",
+          //endDate: "+0",
+          orientation: "top left",
+          keyboardNavigation: false,
+          autoclose: true
+        });
+
+        load_data();
+      });
+      function formatNumber(number) {
+          number = number.toFixed(0) + '';
+          x = number.split(',');
+          x1 = x[0];
+          x2 = x.length > 1 ? ',' + x[1] : '';
+          var rgx = /(\d+)(\d{3})/;
+          while (rgx.test(x1)) {
+              x1 = x1.replace(rgx, '$1' + '.' + '$2');
+          }
+          return x1 + x2;
+      }
+
+      function load_data(){
+        var start = $("#start").val(),
+            end = $("#end").val(),
+            limit = $("#limit").val(),
+            lang = $("#lang").val(),
+            location = $("#location").val();
+        $.ajax({
+          type: "GET",
+          url: "https://hanstech.my.id/api/report",
+          data: "start="+start+"&end="+end+"&lang="+lang+"&limit="+limit+"&location="+location,
+          crossDomain: true,
+          cache: false,
+          beforeSend: function(){ 
+            $("#loader").show();
+            $("#content").hide();
+          },
+          success: function(data){
+            $("#loader").hide();
+            $("#content").show();
+            $("#number_of_tweets").html(formatNumber(data['number_of_tweets']));
+            $("#number_of_users").html(formatNumber(data['number_of_users']));
+            $("#total_reach").html(formatNumber(data['total_reach']));
+
+            var top_location = data['top_location'],
+                topLocation = "";
+            for (var key in top_location) {
+              if (top_location.hasOwnProperty(key)) {
+                topLocation += '<tr>';
+                  topLocation += '<td><h5>'+top_location[key]['location']+'</h5></td>';
+                  topLocation += '<td><h5>'+formatNumber(top_location[key]['number_of_tweets'])+'</h5></td>';
+                  topLocation += '<td><h5>'+formatNumber(top_location[key]['reach'])+'</h5></td>';
+                  topLocation += '</tr>';
+              }
+            }
+            $("#top_location").html(topLocation);
+
+            var top_user = data['top_user'],
+                topUser = "";
+            for (var key in top_user) {
+              if (top_user.hasOwnProperty(key)) {
+                topUser += '<tr>';
+                  topUser +='<td><a href="https://twitter.com/'+top_user[key]['screen_name']+'" target="_blank"><img src="'+top_user[key]['profile_image_url']+'" class="img-thumbnail"></a></td>';
+                  topUser += '<td><h5><a href="https://twitter.com/'+top_user[key]['screen_name']+'" target="_blank">@'+top_user[key]['screen_name']+'</a></h5></td>';
+                  topUser += '<td><h5>'+formatNumber(top_user[key]['followers_count'])+'</h5></td>';
+                topUser += '</tr>';
+              }
+            }
+            $("#top_user").html(topUser);
+
+            var active_user = data['active_user'],
+                activeUser = "";
+            for (var key in active_user) {
+              if (active_user.hasOwnProperty(key)) {
+                activeUser += '<tr>';
+                  activeUser +='<td><a href="https://twitter.com/'+active_user[key]['screen_name']+'" target="_blank"><img src="'+active_user[key]['profile_image_url']+'" class="img-thumbnail"></a></td>';
+                  activeUser += '<td><h5><a href="https://twitter.com/'+active_user[key]['screen_name']+'" target="_blank">@'+active_user[key]['screen_name']+'</a></h5></td>';
+                  activeUser += '<td><h5>'+formatNumber(active_user[key]['number_of_tweets'])+'</h5></td>';
+                activeUser += '</tr>';
+              }
+            }
+            $("#active_user").html(activeUser);
+
+            var popular_tweet = data['popular_tweets'],
+                popularTweet = "";
+            for (var key in popular_tweet) {
+              if (popular_tweet.hasOwnProperty(key)) {
+                popularTweet += '<tr>';
+                  popularTweet += '<td><a href="https://twitter.com/'+popular_tweet[key]['screen_name']+'/status/'+popular_tweet[key]['id']+'" target="_blank">'+popular_tweet[key]['text']+'</a> - @'+popular_tweet[key]['screen_name']+'<br><small>Created at : '+popular_tweet[key]['created_at']+'</small></td>';
+                  popularTweet += '<td><h5>'+formatNumber(popular_tweet[key]['reach'])+'</h5></td>';
+                popularTweet += '</tr>';
+              }
+            }
+            $("#popular_tweet").html(popularTweet);
+
+            var latest_tweet = data['latest_tweets'],
+                latestTweet = "";
+            for (var key in latest_tweet) {
+              if (latest_tweet.hasOwnProperty(key)) {
+                latestTweet += '<tr>';
+                  latestTweet += '<td><a href="https://twitter.com/'+latest_tweet[key]['screen_name']+'/status/'+latest_tweet[key]['id']+'" target="_blank">'+latest_tweet[key]['text']+'</a> - @'+latest_tweet[key]['screen_name']+'<br><small>Created at : '+latest_tweet[key]['created_at']+'</small></td>';
+                  latestTweet += '<td><h5>'+formatNumber(latest_tweet[key]['reach'])+'</h5></td>';
+                  latestTweet += '</tr>';
+              }
+            }
+            $("#latest_tweet").html(latestTweet);
+
+            var tw = data['top_word'],
+                tWord = 0;
+            for (var key in tw) {
+              if (tw.hasOwnProperty(key)) {
+                tWord += tw[key]['count'];
+              }
+            }
+
+            var top_word = data['top_word'],
+                topWord = "";
+            for (var key in top_word) {
+              if (top_word.hasOwnProperty(key)) {
+                topWord += '<span style="font-size:'+(top_word[key]['count']/tWord).toFixed(2) * 30 +'rem;padding:20px">'+top_word[key]['word']+'</span>';
+              }
+            }
+            $("#top_word").html(topWord);
+
+            var per_day = data['per_day'],
+                day = [],
+                reach = [],
+                tweet = [];
+            for (var key in per_day) {
+              if (per_day.hasOwnProperty(key)) {
+                day.push(per_day[key]['created_at']);
+                tweet.push(per_day[key]['number_of_tweets']);
+                reach.push(per_day[key]['reach']);
+              }
+            }
+
+            // Graphs
+            var ctx = document.getElementById('myChart')
+            // eslint-disable-next-line no-unused-vars
+            var myChart = new Chart(ctx, {
+              type: 'line',
+              data: {
+                labels: day.reverse(),
+                datasets: [
+                  {
+                    label: 'Number of Tweets',
+                    data: tweet.reverse(),
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#007bff',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#007bff',
+                  },
+                  {
+                    label: 'Reach',
+                    data: reach.reverse(),
+                    lineTension: 0,
+                    backgroundColor: 'transparent',
+                    borderColor: '#000',
+                    borderWidth: 4,
+                    pointBackgroundColor: '#000',
+                  }
+                ]
+                /* datasets: [{
+                  data: tweet,
+                  lineTension: 0,
+                  backgroundColor: 'transparent',
+                  borderColor: '#007bff',
+                  borderWidth: 4,
+                  pointBackgroundColor: '#007bff'
+                }] */
+              },
+              options: {
+                /* scales: {
+                  y: {
+                    type: 'linear',
+                    display: true,
+                    position: 'left',
+                  },
+                  y1: {
+                    type: 'linear',
+                    display: true,
+                    position: 'right',
+
+                    // grid line settings
+                    grid: {
+                      drawOnChartArea: false, // only want the grid lines for one axis to show up
+                    },
+                  },
+                }, */
+                scales: {
+                  yAxes: [{
+                    ticks: {
+                      beginAtZero: false
+                    }
+                  }]
+                }, 
+                legend: {
+                  display: false
+                }
+              }
+            })
+          }
+        });
+      }
+    </script>
+  </body>
+</html>
